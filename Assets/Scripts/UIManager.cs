@@ -44,7 +44,6 @@ public class UIManager : MonoBehaviour
 		yield return CountdownRoutine();
 	}
 
-
 	public void EndRace() => StartCoroutine(EndRaceRoutine());
 
 	private IEnumerator EndRaceRoutine()
@@ -53,6 +52,7 @@ public class UIManager : MonoBehaviour
 		int dialogueID = 0;
 		yield return DialogueRoutine(dialogueID+100);
 		// Scene change to upgrade
+		GameManager.Instance.ChangeScene("iBuy");
 	}
 
 	public string[] GetDialogue(int id)
@@ -83,17 +83,19 @@ public class UIManager : MonoBehaviour
 			default:
 				break;
 		}
-		return new string[] { "" };
+		return new string[] { };
 	}
 
 	private IEnumerator DialogueRoutine(int id)
 	{
 		string[] dialogue = GetDialogue(id);
+		if(dialogue.Length == 0) yield break;
+
 		dialoguePanel.SetActive(true);
 		foreach(string message in dialogue)
 		{
 			dialogueText.text = message;
-			yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Space));
+			yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Mouse0));
 			yield return null;
 		}
 		dialoguePanel.SetActive(false);
@@ -125,14 +127,14 @@ public class UIManager : MonoBehaviour
 		while(racing)
 		{
 			ts = watch.Elapsed;
-			clockText.text = string.Format("{0:00}:{1:00}.{2:00}",
+			clockText.text = string.Format("{0:00}:{1:00}.{2:000}",
 				ts.Minutes, ts.Seconds,
 				ts.Milliseconds / 10);
 			yield return null;
 		}
 		watch.Stop();
 		ts = watch.Elapsed;
-		clockText.text = string.Format("{0:00}:{1:00}.{2:00}",
+		clockText.text = string.Format("{0:00}:{1:00}.{2:000}",
 			ts.Minutes, ts.Seconds,
 			ts.Milliseconds / 10);
 	}

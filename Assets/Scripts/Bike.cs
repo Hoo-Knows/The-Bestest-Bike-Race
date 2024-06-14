@@ -5,27 +5,34 @@ using UnityEngine;
 
 public class Bike : MonoBehaviour
 {
-	[SerializeField] private float maxSpeed = 10f;
-	[SerializeField] private float accel = 60f;
-	[SerializeField] private float deccel = 40f;
-	private float GRAVITY_SCALE = 1f;
+	[SerializeField] protected BikeData bikeData;
+	protected readonly float RotationSpeed = 45f;
+	protected readonly float GravityScale = 4f;
 
 	[SerializeField] private LayerMask terrain;
 
 	[HideInInspector] public Rigidbody2D rb;
 	[HideInInspector] public BoxCollider2D col;
 
-	private float speedMultiplier = 1f;
+	protected float maxSpeedMultiplier = 1f;
+	protected float accelMultiplier = 1f;
+	protected float decelMultiplier = 1f;
 
 	protected int moveDir;
+	protected bool gliding;
 	protected bool racing;
+	protected bool jumpPressed;
+	protected bool jumpCooldownDone;
 
 	// Start is called before the first frame update
 	protected virtual void Start()
 	{
 		rb = GetComponent<Rigidbody2D>();
 		col = GetComponent<BoxCollider2D>();
-		rb.gravityScale = GRAVITY_SCALE;
+		rb.gravityScale = GravityScale;
+		rb.isKinematic = true;
+		rb.freezeRotation = true;
+		jumpCooldownDone = true;
 
 		// Wait to set racing
 		StartCoroutine(StartRace());
@@ -34,6 +41,8 @@ public class Bike : MonoBehaviour
 	private IEnumerator StartRace()
 	{
 		yield return new WaitUntil(() => UIManager.Instance.racing);
+		rb.isKinematic = false;
+		rb.freezeRotation = false;
 		racing = true;
 	}
 
@@ -45,7 +54,16 @@ public class Bike : MonoBehaviour
 
 	protected virtual void FixedUpdate()
 	{
-		if(racing) rb.velocity = new Vector2(MoveX(moveDir), MoveY());
+		if(racing)
+		{
+			rb.velocity = new Vector2(MoveX(moveDir), MoveY());
+
+			if(!Grounded())
+			{
+				if(rb.rotation < 15f) rb.MoveRotation(rb.rotation += RotationSpeed * Time.deltaTime);
+				else if(rb.rotation > 15f) rb.MoveRotation(rb.rotation -= RotationSpeed * Time.deltaTime);
+			}
+		}
 	}
 
 	private float MoveX(int dir)
@@ -53,13 +71,11 @@ public class Bike : MonoBehaviour
 		float xVel = rb.velocity.x;
 		if(dir != 0)
 		{
-			xVel += dir * accel * Time.fixedDeltaTime;
-			if(Mathf.Abs(xVel) > speedMultiplier * maxSpeed) xVel = Mathf.Sign(xVel) * speedMultiplier * maxSpeed;
+			if(Mathf.Abs(xVel) < maxSpeedMultiplier * bikeData.MaxSpeed) xVel += dir * accelMultiplier * bikeData.Accel * Time.fixedDeltaTime;
 		}
 		else
 		{
-			if(Grounded()) xVel -= Mathf.Sign(xVel) * deccel * Time.fixedDeltaTime;
-			if(xVel * rb.velocity.x <= 0f) xVel = 0f;
+			if(Grounded()) xVel -= Mathf.Sign(xVel) * decelMultiplier * bikeData.Decel * Time.fixedDeltaTime;
 		}
 		return xVel;
 	}
@@ -67,6 +83,12 @@ public class Bike : MonoBehaviour
 	private float MoveY()
 	{
 		float yVel = rb.velocity.y;
+		if(jumpPressed && CanJump())
+		{
+			yVel += bikeData.JumpSpeed;
+			StartCoroutine(JumpCooldown());
+		}
+		if(gliding) yVel = bikeData.GlideYSpeed;
 		return yVel;
 	}
 
@@ -77,6 +99,22 @@ public class Bike : MonoBehaviour
 		size.y = 0.05f;
 
 		return Physics2D.BoxCast(center, size, rb.rotation, Vector2.down, col.bounds.extents.y, terrain);
+	}
+
+	private IEnumerator JumpCooldown()
+	{
+		jumpCooldownDone = false;
+		yield return new WaitForSeconds(1.25f);
+		jumpCooldownDone = true;
+	}
+	
+	private bool CanJump()
+	{
+		Vector3 center = col.bounds.center;
+		Vector3 extents = col.bounds.extents;
+
+		return jumpCooldownDone && Physics2D.Raycast(center, 
+			new Vector2(Mathf.Sin(Mathf.Deg2Rad * rb.rotation), -Mathf.Cos(Mathf.Deg2Rad * rb.rotation)), extents.y + 0.1f, terrain);
 	}
 
 	private void OnCollisionEnter2D(Collision2D collision)
@@ -95,6 +133,7 @@ public class Bike : MonoBehaviour
 			racing = false;
 			rb.velocity = Vector3.zero;
 			rb.isKinematic = true;
+			rb.freezeRotation = true;
 		}
 	}
 }

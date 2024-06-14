@@ -4,32 +4,19 @@ using UnityEngine;
 
 public class Player : Bike
 {
-	[SerializeField] private string[] controls;
-	[SerializeField] private KeyCode[] keys;
-	private Dictionary<string, KeyCode> keybinds;
-
-	protected override void Start()
-    {
-		keybinds = new Dictionary<string, KeyCode>();
-		for(int i = 0; i < controls.Length; i++)
-		{
-			keybinds.Add(controls[i], keys[i]);
-		}
-
-		base.Start();
-    }
-
 	protected override void Update()
 	{
-		if(Input.GetKey(KeyCode.LeftArrow))
+		if(Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
 		{
 			moveDir = -1;
 		}
-		else if(Input.GetKey(KeyCode.RightArrow))
+		else if(Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
 		{
 			moveDir = 1;
 		}
 		else moveDir = 0;
+
+		jumpPressed = Input.GetKey(KeyCode.Z) || Input.GetKey(KeyCode.Space);
 
 		base.Update();
 	}
@@ -41,5 +28,40 @@ public class Player : Bike
 			UIManager.Instance.EndRace();
 		}
 		base.OnTriggerEnter2D(collision);
+	}
+
+	public void ActivateAbility(int abilityID)
+	{
+		switch(abilityID)
+		{
+			case 1:
+				StartCoroutine(RocketBooster());
+				break;
+			case 2:
+				StartCoroutine(Glider());
+				break;
+			default:
+				break;
+		}
+	}
+
+	private IEnumerator RocketBooster()
+	{
+		maxSpeedMultiplier *= 4f;
+		accelMultiplier *= 3f;
+		decelMultiplier *= 0.3f;
+		yield return new WaitForSeconds(5f);
+		maxSpeedMultiplier /= 4f;
+		accelMultiplier /= 3f;
+		decelMultiplier /= 0.3f;
+	}
+
+	private IEnumerator Glider()
+	{
+		rb.gravityScale = 0f;
+		gliding = true;
+		yield return new WaitForSeconds(10f);
+		rb.gravityScale = GravityScale;
+		gliding = false;
 	}
 }
