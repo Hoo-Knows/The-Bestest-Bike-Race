@@ -16,4 +16,5 @@ MonoBehaviour:
   ItemName: Rocket Booster
   ItemCost: 50
   ItemDescription: Propel your bike forward for a short burst!
-  ItemSprite: {fileID: 21300000, guid: 4d1b6e098cb2c69419c745d5d0bd68f3, type: 3}
+  ItemDetailedDescription: Increases speed and acceleration
+  ItemSprite: {fileID: 21300000, guid: bbdd6b738cd0dc541b4ea81f2c456e75, type: 3}

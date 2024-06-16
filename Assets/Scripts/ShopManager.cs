@@ -47,7 +47,7 @@ public class ShopManager : MonoBehaviour
 		Debug.Log("Updating shop with " + panel.itemData.ItemName);
 		infoPanelImage.sprite = panel.itemData.ItemSprite;
 		infoPanelImage.gameObject.SetActive(true);
-		infoPanelText.text = panel.itemData.ItemName;
+		infoPanelText.text = panel.itemData.ItemDetailedDescription;
 		if(GameManager.Instance.unlockedAbilities[panel.itemData.ItemID])
 		{
 			infoPanelOwned.SetActive(true);

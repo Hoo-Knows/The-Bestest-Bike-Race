@@ -16,4 +16,5 @@ MonoBehaviour:
   ItemName: Warp Engine
   ItemCost: 250
   ItemDescription: 100% safe, 10% of the time!
-  ItemSprite: {fileID: 0}
+  ItemDetailedDescription: Teleports you to the biker ahead
+  ItemSprite: {fileID: 21300000, guid: f8393e0434c60f341855ac2e6e14692e, type: 3}

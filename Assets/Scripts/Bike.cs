@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Bike : MonoBehaviour
@@ -8,6 +7,8 @@ public class Bike : MonoBehaviour
 	[SerializeField] protected BikeData bikeData;
 	protected readonly float RotationSpeed = 45f;
 	protected readonly float GravityScale = 4f;
+
+	public GameObject dragChutePrefab;
 
 	[SerializeField] private LayerMask terrain;
 
@@ -63,7 +64,9 @@ public class Bike : MonoBehaviour
 				if(rb.rotation < 15f) rb.MoveRotation(rb.rotation += RotationSpeed * Time.deltaTime);
 				else if(rb.rotation > 15f) rb.MoveRotation(rb.rotation -= RotationSpeed * Time.deltaTime);
 			}
+			return;
 		}
+		rb.velocity = new Vector2(0f, rb.velocity.y);
 	}
 
 	private float MoveX(int dir)
@@ -88,7 +91,7 @@ public class Bike : MonoBehaviour
 			yVel += bikeData.JumpSpeed;
 			StartCoroutine(JumpCooldown());
 		}
-		if(gliding) yVel = bikeData.GlideYSpeed;
+		if(gliding && !Grounded() && yVel <= bikeData.GlideYSpeed) yVel = bikeData.GlideYSpeed;
 		return yVel;
 	}
 
@@ -117,6 +120,39 @@ public class Bike : MonoBehaviour
 			new Vector2(Mathf.Sin(Mathf.Deg2Rad * rb.rotation), -Mathf.Cos(Mathf.Deg2Rad * rb.rotation)), extents.y + 0.1f, terrain);
 	}
 
+	public IEnumerator DragChute()
+	{
+		GameObject dragChute = Instantiate(dragChutePrefab, dragChutePrefab.transform.position, Quaternion.identity);
+		dragChute.transform.SetParent(transform);
+		dragChute.transform.rotation = Quaternion.Euler(0f, 0f, Random.Range(-30f, 30f));
+		dragChute.SetActive(true);
+		maxSpeedMultiplier /= 4f;
+		accelMultiplier /= 4f;
+		yield return new WaitForSeconds(5f);
+		maxSpeedMultiplier *= 4f;
+		accelMultiplier *= 4f;
+		Destroy(dragChute);
+	}
+
+	private Coroutine blueShellCoro;
+
+	public void BlueShell()
+	{
+		if(blueShellCoro != null) StopCoroutine(blueShellCoro);
+		blueShellCoro = StartCoroutine(BlueShellCoro());
+	}
+
+	private IEnumerator BlueShellCoro()
+	{
+		jumpPressed = true;
+		moveDir = 0;
+		rb.velocity = new Vector2(0f, rb.velocity.y);
+		yield return new WaitForSeconds(1f);
+		jumpPressed = false;
+		yield return new WaitForSeconds(1f);
+		moveDir = 1;
+	}
+
 	private void OnCollisionEnter2D(Collision2D collision)
 	{
 		if(Grounded())
@@ -132,8 +168,9 @@ public class Bike : MonoBehaviour
 			moveDir = 0;
 			racing = false;
 			rb.velocity = Vector3.zero;
-			rb.isKinematic = true;
+			//rb.isKinematic = true;
 			rb.freezeRotation = true;
+			UIManager.Instance.AddFinishedRacer(this, false);
 		}
 	}
 }

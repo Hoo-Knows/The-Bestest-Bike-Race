@@ -9,11 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0544f8dcb501d934b9520f6cea22512c, type: 3}
-  m_Name: ShopBarbielandData
+  m_Script: {fileID: 11500000, guid: f9a88407824533f40902f0c44b557303, type: 3}
+  m_Name: AbilityDomainExpansionData
   m_EditorClassIdentifier: 
-  ItemID: 5
-  ItemName: Barbieland
-  ItemCost: 1000
-  ItemDescription: Domain Expansion
-  ItemSprite: {fileID: 0}
+  Duration: 0
+  Cooldown: 0
+  AbilityID: 5
+  Sprite: {fileID: 21300000, guid: f55a4c6afded5434384758fb44315a2d, type: 3}

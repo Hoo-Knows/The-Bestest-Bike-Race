@@ -8,5 +8,6 @@ public class ShopItemData : ScriptableObject
 	public string ItemName;
 	public int ItemCost;
 	public string ItemDescription;
+	public string ItemDetailedDescription;
 	public Sprite ItemSprite;
 }

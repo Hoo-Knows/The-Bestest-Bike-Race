@@ -16,4 +16,5 @@ MonoBehaviour:
   ItemName: Glider
   ItemCost: 15
   ItemDescription: This compact glider will make your cycling easy!
+  ItemDetailedDescription: Reduces fall speed
   ItemSprite: {fileID: 21300000, guid: 98959f18b0c06534d848f52d533b48f0, type: 3}

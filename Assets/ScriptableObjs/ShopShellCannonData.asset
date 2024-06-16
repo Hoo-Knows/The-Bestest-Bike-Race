@@ -16,4 +16,5 @@ MonoBehaviour:
   ItemName: Shell Cannon
   ItemCost: 150
   ItemDescription: For those Richards in our lives!
-  ItemSprite: {fileID: 0}
+  ItemDetailedDescription: Launches homing shells
+  ItemSprite: {fileID: 21300000, guid: 047a3b175915a7642a6a4845753b1a5a, type: 3}

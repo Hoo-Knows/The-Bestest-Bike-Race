@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0544f8dcb501d934b9520f6cea22512c, type: 3}
-  m_Name: ShopDragChuteData
+  m_Name: ShopDomainExpansionData
   m_EditorClassIdentifier: 
-  ItemID: 1
-  ItemName: Drag Chute
-  ItemCost: 35
-  ItemDescription: Not for your own safety, just to mess with others
-  ItemDetailedDescription: Slows nearby bikers
-  ItemSprite: {fileID: 21300000, guid: 4d99388b6cc2a6d4888be02d2283bd3c, type: 3}
+  ItemID: 5
+  ItemName: Domain Expansion
+  ItemCost: 1000
+  ItemDescription: Stand proud, you beat a bunch of middle schoolers
+  ItemDetailedDescription: Creates a barrier and removes all cooldowns
+  ItemSprite: {fileID: 21300000, guid: f55a4c6afded5434384758fb44315a2d, type: 3}
