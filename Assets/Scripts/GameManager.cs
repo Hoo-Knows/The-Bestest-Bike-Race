@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+	private AudioSource audioSource;
 
 	public bool[] unlockedAbilities = new bool[6];
 	public int balance;
@@ -24,6 +26,11 @@ public class GameManager : MonoBehaviour
 		}
 		Instance = this;
 		DontDestroyOnLoad(gameObject);
+	}
+
+	private void Start()
+	{
+		audioSource = GetComponent<AudioSource>();
 	}
 
 	public int GetPrizeForPlacement(int placement)
@@ -50,5 +57,10 @@ public class GameManager : MonoBehaviour
 	public void ChangeScene(string sceneName)
 	{
 		UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+	}
+
+	public void PlayAudio(AudioClip clip)
+	{
+		audioSource.PlayOneShot(clip);
 	}
 }

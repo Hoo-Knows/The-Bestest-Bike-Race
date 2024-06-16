@@ -31,7 +31,7 @@ public class Ability : MonoBehaviour, IPointerClickHandler
     {
         slider = GetComponentInChildren<Slider>();
         slider.value = 1f;
-        yield return new WaitUntil(() => UIManager.Instance.racing);
+        yield return new WaitUntil(() => RaceSceneControl.Instance.racing);
         slider.value = 0f;
         canUse = true;
     }

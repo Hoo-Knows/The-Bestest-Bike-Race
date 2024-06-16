@@ -9,6 +9,11 @@ public class Player : Bike
 	[SerializeField] private GameObject domain;
 	[SerializeField] private GameObject blueShellPrefab;
 
+	public AudioClip gliderSound;
+	public AudioClip rocketSound;
+	public AudioClip warpSound;
+	public AudioClip domainExpansionSound;
+
 	protected override void Update()
 	{
 		if(Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
@@ -35,7 +40,7 @@ public class Player : Bike
 			rb.velocity = Vector3.zero;
 			//rb.isKinematic = true;
 			rb.freezeRotation = true;
-			UIManager.Instance.AddFinishedRacer(this, true);
+			RaceSceneControl.Instance.AddFinishedRacer(this, true);
 		}
 	}
 
@@ -82,6 +87,7 @@ public class Player : Bike
 
 	private IEnumerator GliderAbilityCoro()
 	{
+		audioSource.PlayOneShot(gliderSound);
 		glider.SetActive(true);
 		rb.gravityScale = 0f;
 		gliding = true;
@@ -113,6 +119,7 @@ public class Player : Bike
 	private int rocketCounter = 0;
 	private IEnumerator RocketBoosterAbility()
 	{
+		audioSource.PlayOneShot(rocketSound);
 		rocketCounter++;
 		rocket.SetActive(true);
 		maxSpeedMultiplier *= 2f;
@@ -143,6 +150,7 @@ public class Player : Bike
 
 	private IEnumerator WarpEngineCoro(Bike firstBike)
 	{
+		audioSource.PlayOneShot(warpSound);
 		SpriteRenderer sr = GetComponent<SpriteRenderer>();
 		float timer = 0f;
 		while(timer < 1f)
@@ -165,6 +173,7 @@ public class Player : Bike
 
 	private IEnumerator DomainExpansionCoro()
 	{
+		audioSource.PlayOneShot(domainExpansionSound);
 		float timer = 0f;
 		while(timer <= 0.5f)
 		{

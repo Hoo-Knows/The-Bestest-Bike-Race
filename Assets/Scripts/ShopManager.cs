@@ -17,6 +17,9 @@ public class ShopManager : MonoBehaviour
 	[SerializeField] private GameObject infoPanelPurchase;
 	[SerializeField] private GameObject infoPanelRicher;
 
+	[SerializeField] private AudioClip purchaseSound;
+	[SerializeField] private AudioClip clickSound;
+
 	private void Awake()
 	{
 		Instance = this;
@@ -30,6 +33,7 @@ public class ShopManager : MonoBehaviour
 
 	public void ClickedPanel(ItemPanel panel)
 	{
+		GameManager.Instance.PlayAudio(clickSound);
 		if(selectedPanel != null) selectedPanel.GetComponent<Image>().color = panel.defaultColor;
 		if(selectedPanel == panel)
 		{
@@ -77,6 +81,7 @@ public class ShopManager : MonoBehaviour
 		GameManager.Instance.balance -= selectedPanel.itemData.ItemCost;
 		balanceText.text = "$" + GameManager.Instance.balance;
 		UpdateInfoPanel(selectedPanel);
+		GameManager.Instance.PlayAudio(purchaseSound);
 	}
 
 	public void ChangeScene(string name)

@@ -7,10 +7,15 @@ public class BlueShell : MonoBehaviour
     public Bike target;
     private float speed = 15f;
 
+	private AudioSource audioSource;
+	public AudioClip chaseSound;
+	public AudioClip explodeSound;
+
     // Start is called before the first frame update
     IEnumerator Start()
     {
         transform.SetParent(target.transform);
+		audioSource = GetComponent<AudioSource>();
 		yield return Chase();
 		yield return Float();
 		yield return Explode();
@@ -18,6 +23,7 @@ public class BlueShell : MonoBehaviour
 
 	private IEnumerator Chase()
 	{
+		audioSource.PlayOneShot(chaseSound);
 		while(Vector2.Distance(transform.localPosition, Vector3.up) > 0.05f)
 		{
 			transform.localPosition = Vector2.MoveTowards(transform.localPosition, Vector3.up, speed * Time.fixedDeltaTime);
@@ -42,6 +48,7 @@ public class BlueShell : MonoBehaviour
 
 	private IEnumerator Explode()
 	{
+		audioSource.PlayOneShot(explodeSound);
 		while(Vector2.Distance(transform.localPosition, Vector2.zero) > 0.05f)
 		{
 			transform.localPosition = Vector2.MoveTowards(transform.localPosition, Vector2.zero, speed * Time.fixedDeltaTime);

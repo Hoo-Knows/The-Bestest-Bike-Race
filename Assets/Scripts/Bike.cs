@@ -9,11 +9,13 @@ public class Bike : MonoBehaviour
 	protected readonly float GravityScale = 4f;
 
 	public GameObject dragChutePrefab;
+	public AudioClip dragChuteSound;
 
 	[SerializeField] private LayerMask terrain;
 
-	[HideInInspector] public Rigidbody2D rb;
-	[HideInInspector] public BoxCollider2D col;
+	protected Rigidbody2D rb;
+	protected BoxCollider2D col;
+	protected AudioSource audioSource;
 
 	protected float maxSpeedMultiplier = 1f;
 	protected float accelMultiplier = 1f;
@@ -30,6 +32,7 @@ public class Bike : MonoBehaviour
 	{
 		rb = GetComponent<Rigidbody2D>();
 		col = GetComponent<BoxCollider2D>();
+		audioSource = GetComponent<AudioSource>();
 		rb.gravityScale = GravityScale;
 		rb.isKinematic = true;
 		rb.freezeRotation = true;
@@ -41,7 +44,7 @@ public class Bike : MonoBehaviour
 
 	private IEnumerator StartRace()
 	{
-		yield return new WaitUntil(() => UIManager.Instance.racing);
+		yield return new WaitUntil(() => RaceSceneControl.Instance.racing);
 		rb.isKinematic = false;
 		rb.freezeRotation = false;
 		racing = true;
@@ -122,6 +125,7 @@ public class Bike : MonoBehaviour
 
 	public IEnumerator DragChute()
 	{
+		audioSource.PlayOneShot(dragChuteSound);
 		GameObject dragChute = Instantiate(dragChutePrefab, dragChutePrefab.transform.position, Quaternion.identity);
 		dragChute.transform.SetParent(transform);
 		dragChute.transform.rotation = Quaternion.Euler(0f, 0f, Random.Range(-30f, 30f));
@@ -170,7 +174,7 @@ public class Bike : MonoBehaviour
 			rb.velocity = Vector3.zero;
 			//rb.isKinematic = true;
 			rb.freezeRotation = true;
-			UIManager.Instance.AddFinishedRacer(this, false);
+			RaceSceneControl.Instance.AddFinishedRacer(this, false);
 		}
 	}
 }
