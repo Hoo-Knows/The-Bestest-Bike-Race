@@ -15,10 +15,14 @@ public class RaceSceneControl : MonoBehaviour
 	[SerializeField] private TMP_Text countdownText;
 	[SerializeField] private GameObject clockPanel;
 	[SerializeField] private TMP_Text clockText;
+	[SerializeField] private GameObject dialogueImage;
+	[SerializeField] private Animator dialogueImageAnim;
+	public GameObject spectatePanel;
 
 	[SerializeField] private AudioSource bgMusic;
 	public AudioClip raceStartSound;
 	public AudioClip raceFinishSound;
+	public bool canSpectate;
 
 	public bool racing;
 	private bool stopTimer;
@@ -48,8 +52,11 @@ public class RaceSceneControl : MonoBehaviour
 	private void Start()
 	{
 		dialoguePanel.SetActive(false);
+		dialogueImage.SetActive(false);
 		countdownPanel.SetActive(false);
 		clockPanel.SetActive(false);
+		spectatePanel.SetActive(false);
+		canSpectate = false;
 		StartCoroutine(RaceRoutine());
 	}
 
@@ -78,6 +85,8 @@ public class RaceSceneControl : MonoBehaviour
 		yield return new WaitUntil(() => finishedRacers.Count == 4);
 		racing = false;
 		bgMusic.Stop();
+		spectatePanel.SetActive(false);
+		canSpectate = false;
 
 		// Play any post race dialogue
 		if(!GameManager.Instance.seenLossDialogue)
@@ -134,6 +143,8 @@ public class RaceSceneControl : MonoBehaviour
 			placement = finishedRacers.Count;
 			GameManager.Instance.AddBalanceBasedOnPlacement(placement);
 			GameManager.Instance.PlayAudio(raceFinishSound);
+			spectatePanel.SetActive(true);
+			canSpectate = true;
 		}
 	}
 
@@ -159,7 +170,7 @@ public class RaceSceneControl : MonoBehaviour
 			case DialogueID.ShadyGuyLore:
 				return "You: Hmm...more money to work with. This site sure ships its stuff fast.<br>You: But with items like ‘Teleportation Engine’ and ‘Domain Expansion’ I’m surprised the government hasn’t shut it down yet.<br>You: How did some random guy in a white van just get his hands on them?<br>Jacob: Don’t know, don’t care. Richard’s got it coming for him, insulting my tricycle like that.".Split("<br>");
 			case DialogueID.ShadyGuyLore2:
-				return "Richard: What the hell was that??? How did the judges allow this stuff in a bike race?<br>Jacob: How did they allow a motorbike in the race?<br>Richard: What you’re doing is completely different! Where did you even get these upgrades in the first place?<br>Shady Guy: That would be from me.<br>You: Woah, thanks for setting up iBuy! Wouldn’t’ve won the race without it. And yeah, how’d you get these items?<br>You: I’m not even really cycling at this point, it’s just your stuff doing all the work for me.<br>Shady Guy: I’m not the one who has the items. I don’t even exist, I’m just a random character the developer added to try and explain the store. The items exist only because the developer thought letting players throw shells at Richard would be funny. We are just objects created at the mere whim of a god.<br>You: What?<br>Shady Guy: What?<br>You: ...<br>Jacob: ...<br>Richard: ...<br>Shady Guy: ...<br>Shady Guy: Well, back to my white van I go. I need to go find more aspiring bikers to sell illegal upgrades to.<br>You: Sure?<br>You: Well, that was weird. I guess so are these upgrades, so everything checks out.<br>Richard: This is unfair!<br>Jacob: Deal with it.<br>".Split("<br>");
+				return "Richard: What the hell was that??? How did the judges allow this stuff in a bike race?<br>Jacob: How did they allow a motorbike in the race?<br>Richard: What you’re doing is completely different! Where did you even get these upgrades in the first place?<br>Shady Guy: That would be from me.<br>You: Woah, thanks for setting up iBuy! Wouldn’t’ve won the race without it. And yeah, how’d you get these items?<br>You: I’m not even really cycling at this point, it’s just your stuff doing all the work for me.<br>Shady Guy: True, but I’m not the one you should be thanking.<br>Shady Guy: The developer was the one who created these items because throwing shells at Richard sounded funny.<br>Shady Guy: Hell, I don’t even exist, and neither do you. We’re just objects created at the mere whim of a god.<br>You: What?<br>Shady Guy: Huh?<br>You: ...<br>Jacob: ...<br>Richard: ...<br>Shady Guy: ...<br>Shady Guy: Welp, back to my white van I go. Gotta keep selling dangerous weap- I mean bike upgrades to children.<br>You: Based.<br>Richard: But that’s cheating!<br>Jacob: Cry about it.".Split("<br>");
 			case DialogueID.PrizeInfo:
 				string[] suffix = new string[] { "1st", "2nd", "3rd", "4th" };
 				return new string[] { string.Format("You won ${0} for placing {1}", GameManager.Instance.GetPrizeForPlacement(placement), suffix[placement - 1]) };
@@ -175,13 +186,39 @@ public class RaceSceneControl : MonoBehaviour
 		string[] dialogue = GetDialogue(id);
 		if(dialogue.Length == 0) yield break;
 		dialoguePanel.SetActive(true);
+		dialogueImage.SetActive(false);
 		foreach(string message in dialogue)
 		{
 			dialogueText.text = message;
+			if(dialogueText.text.StartsWith("You: "))
+			{
+				dialogueImage.SetActive(true);
+				dialogueImageAnim.Play("You");
+			}
+			else if(dialogueText.text.StartsWith("Jacob: "))
+			{
+				dialogueImage.SetActive(true);
+				dialogueImageAnim.Play("Jacob");
+			}
+			else if(dialogueText.text.StartsWith("Richard: "))
+			{
+				dialogueImage.SetActive(true);
+				dialogueImageAnim.Play("Richard");
+			}
+			else if(dialogueText.text.StartsWith("Shady Guy: "))
+			{
+				dialogueImage.SetActive(true);
+				dialogueImageAnim.Play("ShadyGuy");
+			}
+			else
+			{
+				dialogueImage.SetActive(false);
+			}
 			yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Mouse0));
 			yield return null;
 		}
 		dialoguePanel.SetActive(false);
+		dialogueImage.SetActive(false);
 	}
 
 	private IEnumerator CountdownRoutine()

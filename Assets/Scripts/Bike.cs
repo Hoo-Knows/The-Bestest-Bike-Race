@@ -10,6 +10,7 @@ public class Bike : MonoBehaviour
 
 	public GameObject dragChutePrefab;
 	public AudioClip dragChuteSound;
+	private Animator animator;
 
 	[SerializeField] private LayerMask terrain;
 
@@ -24,6 +25,7 @@ public class Bike : MonoBehaviour
 	protected int moveDir;
 	protected bool gliding;
 	protected bool racing;
+	protected bool canUseAbilities;
 	protected bool jumpPressed;
 	protected bool jumpCooldownDone;
 
@@ -33,6 +35,7 @@ public class Bike : MonoBehaviour
 		rb = GetComponent<Rigidbody2D>();
 		col = GetComponent<BoxCollider2D>();
 		audioSource = GetComponent<AudioSource>();
+		animator = GetComponent<Animator>();
 		rb.gravityScale = GravityScale;
 		rb.isKinematic = true;
 		rb.freezeRotation = true;
@@ -48,12 +51,16 @@ public class Bike : MonoBehaviour
 		rb.isKinematic = false;
 		rb.freezeRotation = false;
 		racing = true;
+		canUseAbilities = true;
 	}
 
 	protected virtual void Update()
 	{
 		if(moveDir > 0) transform.localScale = new Vector2(1f, 1f);
 		if(moveDir < 0) transform.localScale = new Vector2(-1f, 1f);
+
+		if(moveDir == 0) animator.Play("Idle");
+		else animator.Play("Moving");
 	}
 
 	protected virtual void FixedUpdate()
@@ -68,6 +75,10 @@ public class Bike : MonoBehaviour
 				else if(rb.rotation > 15f) rb.MoveRotation(rb.rotation -= RotationSpeed * Time.deltaTime);
 			}
 			return;
+		}
+		else
+		{
+			moveDir = 0;
 		}
 		rb.velocity = new Vector2(0f, rb.velocity.y);
 	}

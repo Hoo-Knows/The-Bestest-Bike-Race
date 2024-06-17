@@ -67,7 +67,7 @@ public class Ability : MonoBehaviour, IPointerClickHandler
 		if(canUse && Input.GetKeyDown("" + index))
         {
 			canUse = false;
-			Player player = GameObject.Find("Player").GetComponent<Player>();
+			Player player = GameObject.Find("You").GetComponent<Player>();
 			player.ActivateAbility(abilityID);
 			StartCoroutine(Duration());
 		}
@@ -78,7 +78,7 @@ public class Ability : MonoBehaviour, IPointerClickHandler
 		if(canUse)
 		{
 			canUse = false;
-			Player player = GameObject.Find("Player").GetComponent<Player>();
+			Player player = GameObject.Find("You").GetComponent<Player>();
 			player.ActivateAbility(abilityID);
 			StartCoroutine(Duration());
 		}

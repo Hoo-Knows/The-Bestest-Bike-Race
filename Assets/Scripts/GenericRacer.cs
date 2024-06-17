@@ -6,7 +6,14 @@ public class GenericRacer : Bike
 {
 	protected override void Start()
 	{
-		moveDir = 1;
+		StartCoroutine(WaitForRaceStart());
 		base.Start();
+	}
+
+	private IEnumerator WaitForRaceStart()
+	{
+		yield return new WaitUntil(() => RaceSceneControl.Instance.racing);
+		moveDir = 1;
+		yield break;
 	}
 }

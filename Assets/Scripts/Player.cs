@@ -46,7 +46,7 @@ public class Player : Bike
 
 	public void ActivateAbility(int abilityID)
 	{
-		if(!racing) return;
+		if(!canUseAbilities) return;
 		switch(abilityID)
 		{
 			case 0:
